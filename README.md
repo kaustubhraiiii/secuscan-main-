@@ -1,12 +1,12 @@
 # SecuScan
 
-AI-powered security scanner that detects vulnerabilities in Python code using Google Gemini, with color-coded severity ratings, scan history tracking, and a terminal-inspired web dashboard.
+AI-powered security scanner that detects vulnerabilities in Python code using Groq LLM, with color-coded severity ratings, scan history tracking, and a terminal-inspired web dashboard.
 
 ![screenshot](screenshot.png)
 
 ## Features
 
-- **AI-Powered Analysis** — Uses Google Gemini to detect SQL injection, hardcoded secrets, weak cryptography, command injection, and more
+- **AI-Powered Analysis** — Uses Groq (llama-3.3-70b-versatile) to detect SQL injection, hardcoded secrets, weak cryptography, command injection, and more
 - **Severity Ratings** — Color-coded CRITICAL / HIGH / MEDIUM / LOW classifications for every finding
 - **Smart Caching** — SHA-256 deduplication skips re-scanning identical code, saving API calls
 - **Scan History** — SQLite-backed history with severity breakdowns and trend tracking
@@ -15,11 +15,17 @@ AI-powered security scanner that detects vulnerabilities in Python code using Go
 
 ## Tech Stack
 
-**Backend:** Python, FastAPI, SQLAlchemy, SQLite, Google Gemini API, Rich  
-**Frontend:** React, TypeScript, Vite, Tailwind CSS  
+**Backend:** Python, FastAPI, SQLAlchemy, SQLite, Groq API, Rich
+**Frontend:** React, TypeScript, Vite, Tailwind CSS
 **Design:** Terminal Noir — dark theme, JetBrains Mono, electric cyan accents
 
 ## Setup
+
+### Prerequisites
+
+- Python 3.11+
+- Node.js 18+
+- A Groq API key (free tier is sufficient, no credit card required — get one at [console.groq.com](https://console.groq.com))
 
 ### Backend
 
@@ -27,9 +33,11 @@ AI-powered security scanner that detects vulnerabilities in Python code using Go
 cd backend
 pip install -r requirements.txt
 cp .env.example .env
-# Add your Gemini API key to .env
+# Add your Groq API key to .env: GROQ_API_KEY=your_key_here
 uvicorn main:app --reload
 ```
+
+The API will be available at `http://localhost:8000`.
 
 ### Frontend
 
@@ -38,6 +46,8 @@ cd frontend
 npm install
 npm run dev
 ```
+
+The web app will be available at `http://localhost:5173`.
 
 ### CLI
 
@@ -50,17 +60,13 @@ python cli.py history
 
 ## API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/scan` | Scan code for vulnerabilities |
-| GET | `/api/history` | List all past scans |
-| GET | `/api/scan/{id}` | Get full scan details |
-| DELETE | `/api/history/{id}` | Delete a scan |
-| GET | `/api/health` | API health check |
-
-## Note
-
-The Gemini API free tier is sufficient for this project. No credit card required.
+| Method | Endpoint             | Description                  |
+| ------ | -------------------- | ---------------------------- |
+| GET    | `/api/health`        | Health check + database status |
+| POST   | `/api/scan`          | Scan code for vulnerabilities |
+| GET    | `/api/history`       | List all past scans          |
+| GET    | `/api/scan/{id}`     | Get full scan details        |
+| DELETE | `/api/history/{id}`  | Delete a scan                |
 
 ## License
 

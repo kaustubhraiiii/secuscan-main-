@@ -5,9 +5,10 @@ from collections import Counter
 
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from database import ScanRecord, VulnerabilityRecord, find_existing_scan, get_db, hash_code, save_scan
+from database import ScanRecord, VulnerabilityRecord, engine, find_existing_scan, get_db, hash_code, save_scan
 from models import ScanHistoryItem, ScanRequest, ScanResponse, VulnerabilityOut
 from scanner import scan_code
 
@@ -30,9 +31,26 @@ async def root() -> dict:
     return {"status": "running", "version": "1.0.0"}
 
 
+@app.get("/api/health")
+async def api_health() -> dict:
+    """Detailed health check with database status."""
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        db_status = "connected"
+    except Exception:
+        db_status = "disconnected"
+    return {"status": "ok", "database": db_status}
+
+
 @app.post("/api/scan", response_model=ScanResponse)
 async def api_scan(request: ScanRequest, db: Session = Depends(get_db)) -> ScanResponse:
     """Scan code for security vulnerabilities."""
+    if not request.code.strip():
+        raise HTTPException(status_code=422, detail="Code cannot be empty or whitespace-only")
+    if len(request.code) > 50000:
+        raise HTTPException(status_code=422, detail="Code exceeds 50,000 character limit")
+
     code_hash = hash_code(request.code)
 
     existing = find_existing_scan(db, code_hash)
