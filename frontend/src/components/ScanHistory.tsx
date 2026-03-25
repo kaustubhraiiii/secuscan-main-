@@ -35,6 +35,7 @@ export default function ScanHistory({
   activeScanId,
 }: ScanHistoryProps) {
   const [open, setOpen] = useState(false);
+  const items = Array.isArray(history) ? history : [];
 
   return (
     <div className="border-t border-noir-border bg-noir-surface shrink-0">
@@ -53,7 +54,7 @@ export default function ScanHistory({
             Scan History
           </span>
           <span className="px-1.5 py-0 text-[10px] font-mono text-noir-cyan border border-noir-cyan/20 bg-noir-cyan/5">
-            {history.length}
+            {items.length}
           </span>
         </div>
         {isLoading && (
@@ -81,7 +82,7 @@ export default function ScanHistory({
                   </tr>
                 </thead>
                 <tbody>
-                  {history.map((item) => {
+                  {items.map((item) => {
                     const isActive = activeScanId === item.id;
                     return (
                       <tr

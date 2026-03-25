@@ -19,7 +19,7 @@ function App() {
     setHistoryLoading(true);
     try {
       const data = await fetchHistory();
-      setHistory(data);
+      setHistory(Array.isArray(data) ? data : []);
     } catch {
       // silent — history is non-critical
     } finally {
